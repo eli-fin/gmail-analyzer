@@ -20,7 +20,7 @@ def print_messages_with_subject_count(messages, subject_substr):
     print(f"Found {len(filtered)} messages with subject containing '{subject_substr}' with a total size of {total_size_mb:.2f} MB")
 
 
-def summarize_messages_by_header(messages, header_name, output_file_path, output_file_path_unique):
+def summarize_messages_by_header(messages, header_name):
     '''Summarizes messages by a specific header, create a file with all values and a file with unique counts'''
     # (header_value, size)
     all_results = [(get_header_value(
@@ -32,14 +32,19 @@ def summarize_messages_by_header(messages, header_name, output_file_path, output
         all_results_unique[header_value] = (
             all_results_unique[header_value][0] + 1, all_results_unique[header_value][1] + size)
 
-    with open(output_file_path, 'w', encoding='utf8') as f:
+    with open(f'{download_messages.OUTPUT_FILE_FOLDER}/_analyzed_{header_name}.txt', 'w', encoding='utf8') as f:
         for l in sorted([m[0] for m in all_results]):
             _ = f.write(f"{l}\n")
 
-    with open(output_file_path_unique, 'w', encoding='utf8') as f:
-        for m, (count, size) in sorted(all_results_unique.items(), key=lambda item: item[1], reverse=True):
+    with open(f'{download_messages.OUTPUT_FILE_FOLDER}/_analyzed_{header_name}_unique_by_count.txt', 'w', encoding='utf8') as f:
+        for m, (count, size) in sorted(all_results_unique.items(), key=lambda item: item[1][0], reverse=True):
             _ = f.write(
                 f"count: {count}, size: {size/1024/1024:.2f} MB\t{m}\n")
+
+    with open(f'{download_messages.OUTPUT_FILE_FOLDER}/_analyzed_{header_name}_unique_by_size.txt', 'w', encoding='utf8') as f:
+        for m, (count, size) in sorted(all_results_unique.items(), key=lambda item: item[1][1], reverse=True):
+            _ = f.write(
+                f"size: {size/1024/1024:.2f} MB, count: {count}\t{m}\n")
 
 
 def main():
@@ -48,12 +53,8 @@ def main():
     print_messages_with_subject_count(messages, "")  # all messages
     print_messages_with_subject_count(messages, "login")
 
-    summarize_messages_by_header(messages, 'subject',
-                                 f'{download_messages.OUTPUT_FILE_FOLDER}/_all_subjects.txt',
-                                 f'{download_messages.OUTPUT_FILE_FOLDER}/_all_subjects_unique.txt')
-    summarize_messages_by_header(messages, 'from',
-                                 f'{download_messages.OUTPUT_FILE_FOLDER}/_all_from.txt',
-                                 f'{download_messages.OUTPUT_FILE_FOLDER}/_all_from_unique.txt')
+    summarize_messages_by_header(messages, 'subject')
+    summarize_messages_by_header(messages, 'from')
 
 
 if __name__ == "__main__":

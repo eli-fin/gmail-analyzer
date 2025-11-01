@@ -18,7 +18,7 @@ and writes them to a json lines file.
 CREDENTIALS_FILE_PATH = ".auth_cache/credentials.json"
 TOKEN_FILE_PATH = "auth_cache/token.json"
 OUTPUT_FILE_FOLDER = "output"
-OUTPUT_FILE_PATH = OUTPUT_FILE_FOLDER + "/output.jsonl"
+OUTPUT_FILE_PATH = OUTPUT_FILE_FOLDER + "/email_list.jsonl"
 AUTH_SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
 
